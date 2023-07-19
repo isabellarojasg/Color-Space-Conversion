@@ -1,5 +1,7 @@
 # Color-Space-Conversion
 
+By: Isabella Rojas and Lydia Mekonnen Lulie
+
 ## Design Specifications 
 In our design implementation, the selection of the image size of 64 x 48 pixels is influenced by the characteristics of the ARM instruction set and the cache size being used. The image size exceeds the capacity of the cache we are utilizing. The choice allows us to perform the color space conversion algorithm and assess the algorithm’s performance. Our goal is to maximize the algorithm’s efficiency within the confines of the ARM instruction set architecture.
 
