@@ -11,6 +11,12 @@
 #define GLOBAL
 #include "CSC_global.h"
 
+unsigned int read_cache_type_register() {
+    unsigned int ctr;
+    asm volatile("mrc p15, 0, %[result], c0, c0, 1" : [result] "=r" (ctr));
+    return ctr;
+}
+
 int main( void) {
   int row, col;
   FILE *f_ID_input_RGB;
@@ -22,20 +28,16 @@ int main( void) {
   FILE *f_ID_output_Cr;
   FILE *f_ID_output_RGB;
 
+  unsigned int ctr = read_cache_type_register();
 
-  int cpsr;
-  int size_field;
-  int m_bit;
-
-  // ARM inline assembly to read the CPSR register
-  asm volatile("mrs %[result], cpsr" : [result] "=r" (cpsr));
+  // Extract the size field (bits 9 to 6) from the CTR register
+  int size_field = (ctr >> 6) & 0xF;
 
   // Extract the M bit (bit 2) from the CPSR register
   m_bit = (cpsr >> 2) & 1;
 
-  // Extract the size field (bits 8 to 6) from the CPSR register
-  size_field = (cpsr >> 6) & 0x7;
 
+  printf("Cache Type Register (CTR): 0x%X\n", ctr);
   printf("Size Field: %d\n", size_field);
   printf("M Bit: %d\n", m_bit);
 
