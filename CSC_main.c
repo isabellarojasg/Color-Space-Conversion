@@ -34,7 +34,7 @@ int main( void) {
   int size_field = (ctr >> 6) & 0xF;
 
   // Extract the M bit (bit 2) from the CPSR register
-  m_bit = (cpsr >> 2) & 1;
+  int m_bit = (ctr >> 2) & 1;
 
 
   printf("Cache Type Register (CTR): 0x%X\n", ctr);
