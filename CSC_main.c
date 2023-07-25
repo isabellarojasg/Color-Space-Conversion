@@ -24,25 +24,25 @@ int main( void) {
 
   f_ID_input_RGB = fopen( "./image_input_RGB_64_48_03.data", "rb");
   if( f_ID_input_RGB == NULL) {
-    printf( "Cannot open file.\n");
+    printf( "Cannot open file input_RGB_64_48_03.\n");
     return( 1);
   }
 
   f_ID_echo_R = fopen( "./image_echo_R_64_48_03.data", "wb");
   if( f_ID_echo_R == NULL) {
-    printf( "Cannot open file.\n");
+    printf( "Cannot open file echo_R_64_48_03.\n");
     return( 1);
   }
 
   f_ID_echo_G = fopen( "./image_echo_G_64_48_03.data", "wb");
   if( f_ID_echo_G == NULL) {
-    printf( "Cannot open file.\n");
+    printf( "Cannot open file echo_G_64_48_03.\n");
     return( 1);
   }
 
   f_ID_echo_B = fopen( "./image_echo_B_64_48_03.data", "wb");
   if( f_ID_echo_B == NULL) {
-    printf( "Cannot open file.\n");
+    printf( "Cannot open file echo_B_64_48_03.\n");
     return( 1);
   }
 
@@ -107,7 +107,7 @@ int main( void) {
 
   f_ID_output_RGB = fopen( "./image_output_RGB_64_48_03.data", "wb");
   if( f_ID_output_RGB == NULL) {
-    printf( "Cannot open file.\n");
+    printf( "Cannot open file RGB_64_48_03.\n");
     return( 1);
   }
 
