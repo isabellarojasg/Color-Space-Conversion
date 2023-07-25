@@ -22,6 +22,23 @@ int main( void) {
   FILE *f_ID_output_Cr;
   FILE *f_ID_output_RGB;
 
+
+  int cpsr;
+  int size_field;
+  int m_bit;
+
+  // ARM inline assembly to read the CPSR register
+  asm volatile("mrs %[result], cpsr" : [result] "=r" (cpsr));
+
+  // Extract the M bit (bit 2) from the CPSR register
+  m_bit = (cpsr >> 2) & 1;
+
+  // Extract the size field (bits 8 to 6) from the CPSR register
+  size_field = (cpsr >> 6) & 0x7;
+
+  printf("Size Field: %d\n", size_field);
+  printf("M Bit: %d\n", m_bit);
+
   f_ID_input_RGB = fopen( "./image_input_RGB_64_48_03.data", "rb");
   if( f_ID_input_RGB == NULL) {
     printf( "Cannot open file input_RGB_64_48_03.\n");
