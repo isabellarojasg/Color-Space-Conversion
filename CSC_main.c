@@ -7,6 +7,7 @@
 #include <stdint.h>
 //#include <string.h>
 #include <math.h>
+#include <sys/time.h>
 
 #define GLOBAL
 #include "CSC_global.h"
@@ -21,6 +22,10 @@ int main( void) {
   FILE *f_ID_output_Cb;
   FILE *f_ID_output_Cr;
   FILE *f_ID_output_RGB;
+  struct timeval start_time, end_time;
+  double latency;
+
+  gettimeofday(&start_time, NULL); // Record the start time
 
   f_ID_input_RGB = fopen( "./image_input_RGB_64_48_03.data", "rb");
   if( f_ID_input_RGB == NULL) {
@@ -119,5 +124,11 @@ int main( void) {
   }
   fclose( f_ID_output_RGB);
 
+  gettimeofday(&end_time, NULL); // Record the end time
+
+  // Calculate the latency in seconds
+    latency = (end_time.tv_sec - start_time.tv_sec) +
+              (end_time.tv_usec - start_time.tv_usec) / 1000000.0;
+    printf("Latency: %f seconds\n", latency);
 } // END of main()
 
