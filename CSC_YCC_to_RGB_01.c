@@ -175,10 +175,17 @@ static void CSC_YCC_to_RGB_brute_force_int( int row, int col) {
   R_pixel_11 += (1 << (K-1)); // rounding
   R_pixel_11 = R_pixel_11 >> K;
 
-  R[row+0][col+0] = (uint8_t)R_pixel_00;
-  R[row+0][col+1] = (uint8_t)R_pixel_01;
-  R[row+1][col+0] = (uint8_t)R_pixel_10;
-  R[row+1][col+1] = (uint8_t)R_pixel_11;
+  //R[row+0][col+0] = (uint8_t)R_pixel_00;
+  R[row+0][col+0] = saturation_int( R_pixel_00);
+
+  //R[row+0][col+1] = (uint8_t)R_pixel_01;
+  R[row+0][col+1] = saturation_int( R_pixel_01);
+
+  //R[row+1][col+0] = (uint8_t)R_pixel_10;
+  R[row+1][col+0] = saturation_int(R_pixel_10);
+  
+  //R[row+1][col+1] = (uint8_t)R_pixel_11;
+  R[row+1][col+1] = saturation_int(R_pixel_11);
 
   G_pixel_00 = D1 * Y_pixel_00 - D3 * Cr_pixel_00
                                - D4 * Cb_pixel_00;
@@ -200,10 +207,17 @@ static void CSC_YCC_to_RGB_brute_force_int( int row, int col) {
   G_pixel_11 += (1 << (K-1)); // rounding
   G_pixel_11 = G_pixel_11 >> K;
 
-  G[row+0][col+0] = (uint8_t)G_pixel_00;
-  G[row+0][col+1] = (uint8_t)G_pixel_01;
-  G[row+1][col+0] = (uint8_t)G_pixel_10;
-  G[row+1][col+1] = (uint8_t)G_pixel_11;
+  //G[row+0][col+0] = (uint8_t)G_pixel_00;
+  G[row+0][col+0] = saturation_int(G_pixel_00);
+
+ // G[row+0][col+1] = (uint8_t)G_pixel_01;
+  G[row+0][col+1] = saturation_int(G_pixel_01);
+
+ // G[row+1][col+0] = (uint8_t)G_pixel_10;
+  G[row+1][col+0] = saturation_int(G_pixel_10);
+
+ // G[row+1][col+1] = (uint8_t)G_pixel_11;
+  G[row+1][col+1] = saturation_int(G_pixel_11);
 
   B_pixel_00 = D1 * Y_pixel_00 + D5 * Cb_pixel_00;
   B_pixel_00 += (1 << (K-1)); // rounding
@@ -221,10 +235,18 @@ static void CSC_YCC_to_RGB_brute_force_int( int row, int col) {
   B_pixel_11 += (1 << (K-1)); // rounding
   B_pixel_11 = B_pixel_11 >> K;
 
-  B[row+0][col+0] = (uint8_t)B_pixel_00;
-  B[row+0][col+1] = (uint8_t)B_pixel_01;
-  B[row+1][col+0] = (uint8_t)B_pixel_10;
-  B[row+1][col+1] = (uint8_t)B_pixel_11;
+  //B[row+0][col+0] = (uint8_t)B_pixel_00;
+  B[row+0][col+0] = saturation_int(B_pixel_00);
+
+  //B[row+0][col+1] = (uint8_t)B_pixel_01;
+  B[row+0][col+1] = saturation_int(B_pixel_01);
+
+  //B[row+1][col+0] = (uint8_t)B_pixel_10;
+  B[row+1][col+0] = saturation_int(B_pixel_10);
+
+  //B[row+1][col+1] = (uint8_t)B_pixel_11;
+  B[row+1][col+1] = saturation_int(B_pixel_11);
+
 
 } // END of CSC_YCC_to_RGB_brute_force_int()
 

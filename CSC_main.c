@@ -27,7 +27,7 @@ int main( void) {
 
   gettimeofday(&start_time, NULL); // Record the start time
 
-  f_ID_input_RGB = fopen( "./image_input.data", "rb");
+  f_ID_input_RGB = fopen( "./image_input_RGB_64_48_03.data", "rb");
   if( f_ID_input_RGB == NULL) {
     printf( "Cannot open file input_RGB_64_48_03.\n");
     return( 1);
