@@ -42,44 +42,44 @@ typedef struct {
 	unsigned char g;
 	unsigned char r;  
 
-} RGB;
+} Pixel;
 
 typedef struct {
 	int width;
 	int height;
-  RGB **rgb;
+  Pixel *pixels;
 } Image;
 
 
-//read image from file and return the Image struct containing file data
+//read image from file and return the Image struct containing image data
 Image readImage(FILE *fp, int height, int width){
-  Image picture;
+  Image pic;
 
-  //2D array with height rows, each row is pointer to array of RGB structs
-  picture.rgb = (RGB**) malloc (height*sizeof(void*));
-  picture.height = height;
-  picture.width = width;
-  int i;
-  for(i= height-1 ; i = 0; i++){
-    picture.rgb[i] = (RGB*) malloc(width * sizeof(RGB));
-  }
-  return picture;
+  pic.height = height;
+  pic.width = width;
+
+  //allocate memory for 1D array to store all image pixel data
+  //pic.pixels is pointer to 1D array of Pixel structures
+  pic.pixels = (Pixel*) malloc (sizeof(Pixel) * pic.height * pic.width);
+
+  
+  return pic;
 }
 
-void freeImage(Image picture){
-  int i;
-  for(i= height-1 ; i = 0; i++){
-    free(picture.rgb[i]);
-    free(picture.rgb);
-  }
-}
+// void freeImage(Image picture){
+//   int i;
+//   for(i= height-1 ; i = 0; i++){
+//     free(picture.rgb[i]);
+//     free(picture.rgb);
+//   }
+// }
 
 int main( void) {
 
   
   int row, col;
     // Open the BMP file for reading
-    FILE* file = fopen("./Images/newrgb.bmp", "rb");
+    FILE* file = fopen("./Images/new.bmp", "rb");
     if (file == NULL) {
         printf("Error opening file.\n");
         return 1;
@@ -100,22 +100,56 @@ int main( void) {
     BITMAPINFOHEADER info_header;
     fread(&info_header, sizeof(BITMAPINFOHEADER), 1, file);
 
-    printf("Size: %u\n", info_header.size);
+    // printf("Offset: %u\n", file_header.offset);
+
+    // printf("Size: %u\n", info_header.size);
     printf("Width: %d\n", info_header.width);
     printf("Height: %d\n", info_header.height);
-    printf("Bits Per Pixel: %u\n", info_header.bits_per_pixel);
-    printf("Compression: %u\n", info_header.compression);
-    printf("Image Size: %u\n", info_header.image_size);
+    // printf("Bits Per Pixel: %u\n", info_header.bits_per_pixel);
+    // printf("Compression: %u\n", info_header.compression);
+    // printf("Image Size: %u\n", info_header.image_size);
     
     // Get the image dimensions
     int width = info_header.width;
     int height = abs(info_header.height); // Height can be negative for top-down BMP
 
-    // Calculate image size (without padding)
-    int image_size = width * height * 3; // 3 bytes per pixel for 24-bit BMP
-    Image image = readImage(file,height,width);
+   // Calculate padding (if any) at the end of each row in BMP
+
+    Image pic;
+    pic.height = height;
+    pic.width = width;
+
+    pic.pixels = (Pixel*) malloc (sizeof(Pixel) * pic.height * pic.width);
+
+    int padding = (4 - (width * sizeof(Pixel)) % 4) % 4;
+    printf("padding: %d\n", padding);
+    // Move to the beginning of pixel data
+    fseek(file, 54, SEEK_SET);
+    fread(pic.pixels, sizeof(Pixel), pic.height * pic.width, file);
+
+   // Image image = readImage(file, height, width);
     fclose(file);
-    freeImage(image)
+
+    FILE* outputFile = fopen("output.txt", "wb");
+    int i;
+    // Write the pixel data to the output file
+    for (i = 0; i < pic.height * pic.width; i++) {
+        fprintf(outputFile, "Pixel %d: R=%d, G=%d, B=%d\n", i + 1,
+                pic.pixels[i].r, pic.pixels[i].g, pic.pixels[i].b);
+    }
+
+
+    // printf("Printing Pixel Data:\n");
+    // int y,x;
+    // for (y = 0; y < pic.height; y++) {
+    //     for (x = 0; x < pic.width; x++) {
+    //         //printf("Pixel at (%d, %d) - R: %u, G: %u, B: %u\n", x, y,  pic.pixels[y * pic.width + x].r,
+    //           fwrite( pic.pixels[y * pic.width + x].r, pic.pixels[y * pic.width + x].g,  pic.pixels[y * pic.width + x].b);
+    //     }
+    // }
+
+    fclose(outputFile);
+    free(pic.pixels);
     // // Allocate memory to store pixel data
     // uint8_t* pixel_data = (uint8_t*)malloc(image_size);
     // if (pixel_data == NULL) {
