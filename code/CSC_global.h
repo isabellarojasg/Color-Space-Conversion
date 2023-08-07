@@ -2,8 +2,8 @@
 
 #define K 8 // bitwidth
 #define UNITY (1 << K)
-#define IMAGE_ROW_SIZE 64
-#define IMAGE_COL_SIZE 48
+#define IMAGE_ROW_SIZE 86
+#define IMAGE_COL_SIZE 64
 
 // RGB_to_YCC_ROUTINE
 //     1 for CSC_RGB_to_YCC_brute_force_float()

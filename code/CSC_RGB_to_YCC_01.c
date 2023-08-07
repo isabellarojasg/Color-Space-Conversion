@@ -23,7 +23,7 @@ static uint8_t chrominance_downsample(
 // private definitions
 // =======
 static void CSC_RGB_to_YCC_brute_force_float( int row, int col) {
-//
+
   uint8_t Cb_pixel_00, Cb_pixel_01;
   uint8_t Cb_pixel_10, Cb_pixel_11;
   uint8_t Cr_pixel_00, Cr_pixel_01;
@@ -81,7 +81,7 @@ static void CSC_RGB_to_YCC_brute_force_float( int row, int col) {
 
 // =======
 static void CSC_RGB_to_YCC_brute_force_int( int row, int col) {
-//
+
   int R_pixel_00, R_pixel_01, R_pixel_10, R_pixel_11;
   int G_pixel_00, G_pixel_01, G_pixel_10, G_pixel_11;
   int B_pixel_00, B_pixel_01, B_pixel_10, B_pixel_11;
@@ -217,9 +217,9 @@ static uint8_t chrominance_downsample(
 } // END of chrominance_downsample()
 
 // =======
-void CSC_RGB_to_YCC( void) {
+void CSC_RGB_to_YCC(void) {
   int row, col; // indices for row and column
-//
+
   for( row=0; row<IMAGE_ROW_SIZE; row+=2) {
     for( col=0; col<IMAGE_COL_SIZE; col+=2) { 
       //printf( "\n[row,col] = [%02i,%02i]\n\n", row, col);
