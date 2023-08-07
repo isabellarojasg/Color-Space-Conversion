@@ -217,7 +217,12 @@ static uint8_t chrominance_downsample(
 } // END of chrominance_downsample()
 
 // =======
-void CSC_RGB_to_YCC(void) {
+void CSC_RGB_to_YCC(uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Red array pointer
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Green array pointer
+ uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Blue array pointer
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Luminance array pointer
+ uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1], // Chrominance (Cb) array pointer
+ uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]) {
   int row, col; // indices for row and column
 
   for( row=0; row<IMAGE_ROW_SIZE; row+=2) {

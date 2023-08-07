@@ -25,6 +25,15 @@ int main( void) {
   struct timeval start_time, end_time;
   double latency;
 
+  uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Red array pointer
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Green array pointer
+ uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Blue array pointer
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Luminance array pointer
+ uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]; // Chrominance (Cb) array pointer
+ uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]; // Chrominance (Cr) array pointer
+ uint8_t Cb_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Chrominance (Cb) temp array pointer
+ uint8_t Cr_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Chrominance (Cr) temp array pointer
+
   gettimeofday(&start_time, NULL); // Record the start time
 
   f_ID_input_RGB = fopen( "./image_86_64.data", "rb");
@@ -55,10 +64,10 @@ int main( void) {
   for( col=0; col < IMAGE_COL_SIZE; col++) {
     R[row][col] = (uint8_t)( fgetc( f_ID_input_RGB));
     fputc( R[row][col], f_ID_echo_R);
-//
+
     G[row][col] = (uint8_t)( fgetc( f_ID_input_RGB));
     fputc( G[row][col], f_ID_echo_G);
-//
+
     B[row][col] = (uint8_t)( fgetc( f_ID_input_RGB));
     fputc( B[row][col], f_ID_echo_B);
   }
@@ -67,7 +76,7 @@ int main( void) {
   fclose( f_ID_echo_R);
   fclose( f_ID_input_RGB);
 
-  CSC_RGB_to_YCC();
+  CSC_RGB_to_YCC(R,G,B,Y,CB,CR);
 
   f_ID_output_Y = fopen( "./image_output_Y_64_48_03.data", "wb");
   if( f_ID_output_Y == NULL) {
