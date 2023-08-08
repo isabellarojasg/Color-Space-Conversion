@@ -10,10 +10,20 @@
 
 // private prototypes
 // =======
-static void CSC_RGB_to_YCC_brute_force_float( int row, int col);
+static void CSC_RGB_to_YCC_brute_force_float( int row, int col, uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Red array pointer
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Green array pointer
+ uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Blue array pointer
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Luminance array pointer
+ uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1], // Chrominance (Cb) array pointer
+ uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]);
 
 // =======
-static void CSC_RGB_to_YCC_brute_force_int( int row, int col);
+static void CSC_RGB_to_YCC_brute_force_int( int row, int col, uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Red array pointer
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Green array pointer
+ uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Blue array pointer
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Luminance array pointer
+ uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1], // Chrominance (Cb) array pointer
+ uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]);
 
 // =======
 static uint8_t chrominance_downsample(
@@ -22,7 +32,10 @@ static uint8_t chrominance_downsample(
 
 // private definitions
 // =======
-static void CSC_RGB_to_YCC_brute_force_float( int row, int col) {
+static void CSC_RGB_to_YCC_brute_force_float( int row, int col, uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE],
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], 
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1], 
+ uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]){
 
   uint8_t Cb_pixel_00, Cb_pixel_01;
   uint8_t Cb_pixel_10, Cb_pixel_11;
@@ -80,7 +93,12 @@ static void CSC_RGB_to_YCC_brute_force_float( int row, int col) {
 } // END of CSC_RGB_to_YCC_brute_force_float()
 
 // =======
-static void CSC_RGB_to_YCC_brute_force_int( int row, int col) {
+static void CSC_RGB_to_YCC_brute_force_int( int row, int col, uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Red array pointer
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Green array pointer
+ uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Blue array pointer
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Luminance array pointer
+ uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1], // Chrominance (Cb) array pointer
+ uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]) {
 
   int R_pixel_00, R_pixel_01, R_pixel_10, R_pixel_11;
   int G_pixel_00, G_pixel_01, G_pixel_10, G_pixel_11;
@@ -217,11 +235,9 @@ static uint8_t chrominance_downsample(
 } // END of chrominance_downsample()
 
 // =======
-void CSC_RGB_to_YCC(uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Red array pointer
- uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Green array pointer
- uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Blue array pointer
- uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Luminance array pointer
- uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1], // Chrominance (Cb) array pointer
+void CSC_RGB_to_YCC(uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE],
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], 
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1], 
  uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]) {
   int row, col; // indices for row and column
 
@@ -232,20 +248,16 @@ void CSC_RGB_to_YCC(uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Red array poin
         case 0:
           break;
         case 1:
-          CSC_RGB_to_YCC_brute_force_float( row, col);
+          CSC_RGB_to_YCC_brute_force_float(row, col, R,G,B,Y,Cb,Cr);
           break;
         case 2:
-          CSC_RGB_to_YCC_brute_force_int( row, col);
+          CSC_RGB_to_YCC_brute_force_int( row, col, R, G, B, Y, Cb, Cr);
           break;
         default:
           break;
       }
-//      printf( "Luma_00  = %02hhx\n", Y[row+0][col+0]);
-//      printf( "Luma_01  = %02hhx\n", Y[row+0][col+1]);
-//      printf( "Luma_10  = %02hhx\n", Y[row+1][col+0]);
-//      printf( "Luma_11  = %02hhx\n\n", Y[row+1][col+1]);
     }
   }
 
-} // END of CSC_RGB_to_YCC()
+}
 

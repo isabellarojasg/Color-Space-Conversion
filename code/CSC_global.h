@@ -56,16 +56,20 @@
 #endif
 
 /* prototypes of global functions */
-void CSC_RGB_to_YCC( void);
-void CSC_YCC_to_RGB( void);
+void CSC_RGB_to_YCC( uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; 
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE];
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1];
+ uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]; uint8_t Cb_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE];
+ uint8_t Cr_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE];);
 
-/* global variables */
-EXTERN uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Red array pointer
-EXTERN uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Green array pointer
-EXTERN uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Blue array pointer
-EXTERN uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Luminance array pointer
-EXTERN uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]; // Chrominance (Cb) array pointer
-EXTERN uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]; // Chrominance (Cr) array pointer
-EXTERN uint8_t Cb_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Chrominance (Cb) temp array pointer
-EXTERN uint8_t Cr_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Chrominance (Cr) temp array pointer
+void CSC_YCC_to_RGB(uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Red array pointer
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Green array pointer
+ uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Blue array pointer
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Luminance array pointer
+ uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]; // Chrominance (Cb) array pointer
+ uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]; // Chrominance (Cr) array pointer
+ uint8_t Cb_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Chrominance (Cb) temp array pointer
+ uint8_t Cr_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE];);
+
+
 

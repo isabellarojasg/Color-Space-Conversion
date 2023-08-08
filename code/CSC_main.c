@@ -76,7 +76,7 @@ int main( void) {
   fclose( f_ID_echo_R);
   fclose( f_ID_input_RGB);
 
-  CSC_RGB_to_YCC(R,G,B,Y,CB,CR);
+  CSC_RGB_to_YCC(R,G,B,Y,Cb,Cr);
 
   f_ID_output_Y = fopen( "./image_output_Y_64_48_03.data", "wb");
   if( f_ID_output_Y == NULL) {
@@ -117,7 +117,7 @@ int main( void) {
   fclose( f_ID_output_Cb);
   fclose( f_ID_output_Y);
 
-  CSC_YCC_to_RGB();
+  CSC_YCC_to_RGB(R,G,B,Y,Cb,Cr);
 
   f_ID_output_RGB = fopen( "./image_output_RGB_64_48_03.data", "wb");
   if( f_ID_output_RGB == NULL) {
