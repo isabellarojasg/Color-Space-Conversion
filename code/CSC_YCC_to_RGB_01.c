@@ -153,7 +153,7 @@ static void CSC_YCC_to_RGB_brute_force_int( int row, int col, uint8_t R[IMAGE_RO
  uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1],
  uint8_t Cb_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE],
  uint8_t Cr_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]) {
-//
+
   int R_pixel_00, R_pixel_01, R_pixel_10, R_pixel_11;
   int G_pixel_00, G_pixel_01, G_pixel_10, G_pixel_11;
   int B_pixel_00, B_pixel_01, B_pixel_10, B_pixel_11;
@@ -162,7 +162,6 @@ static void CSC_YCC_to_RGB_brute_force_int( int row, int col, uint8_t R[IMAGE_RO
   int Cb_pixel_00, Cb_pixel_01, Cb_pixel_10, Cb_pixel_11;
   int Cr_pixel_00, Cr_pixel_01, Cr_pixel_10, Cr_pixel_11;
 
-  // Upsample Cb and Cr into Cb_temp and Cr_temp
   chrominance_array_upsample(R,G,B,Y,Cb,Cr,Cb_temp,Cr_temp);
 
   Y_pixel_00 = (int)Y[row+0][col+0];
@@ -389,19 +388,15 @@ static void chrominance_array_upsample( uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE
   Cr_temp[(row<<1)+1][(col<<1)+0] = Cr[row][col];
   Cr_temp[(row<<1)+1][(col<<1)+1] = Cr[row][col];
 
-} // END of chrominance_array_upsample()
+} 
 
-// =======
-void CSC_YCC_to_RGB( uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Red array pointer
- uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Green array pointer
- uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Blue array pointer
- uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Luminance array pointer
- uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1], // Chrominance (Cb) array pointer
- uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1],
- uint8_t Cb_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE],
+
+void CSC_YCC_to_RGB( uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], 
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE],
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1], 
+ uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1],uint8_t Cb_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE],
  uint8_t Cr_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]) {
-  int row, col; // indices for row and column
-//
+  int row, col; 
   for( row=0; row<IMAGE_ROW_SIZE; row+=2) {
     for( col=0; col<IMAGE_COL_SIZE; col+=2) { 
       //printf( "\n[row,col] = [%02i,%02i]\n\n", row, col);
@@ -412,17 +407,12 @@ void CSC_YCC_to_RGB( uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Red array poi
           CSC_YCC_to_RGB_brute_force_float(row, col, R,G,B,Y,Cb,Cr,Cb_temp,Cr_temp);
           break;
         case 2:
-          CSC_YCC_to_RGB_brute_force_int( row, col, R,G,B,Y,Cb,Cr,Cb_temp,Cr_temp);
+          CSC_YCC_to_RGB_brute_force_int(row, col, R,G,B,Y,Cb,Cr,Cb_temp,Cr_temp);
           break;
         default:
           break;
       }
-//      printf( "Luma_00  = %02hhx\n", Y[row+0][col+0]);
-//      printf( "Luma_01  = %02hhx\n", Y[row+0][col+1]);
-//      printf( "Luma_10  = %02hhx\n", Y[row+1][col+0]);
-//      printf( "Luma_11  = %02hhx\n\n", Y[row+1][col+1]);
     }
   }
 
-} // END of CSC_YCC_to_RGB()
-
+} 

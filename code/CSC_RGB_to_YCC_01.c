@@ -93,11 +93,11 @@ static void CSC_RGB_to_YCC_brute_force_float( int row, int col, uint8_t R[IMAGE_
 } // END of CSC_RGB_to_YCC_brute_force_float()
 
 // =======
-static void CSC_RGB_to_YCC_brute_force_int( int row, int col, uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Red array pointer
- uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Green array pointer
- uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Blue array pointer
- uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Luminance array pointer
- uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1], // Chrominance (Cb) array pointer
+static void CSC_RGB_to_YCC_brute_force_int( int row, int col, uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], 
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE],
+ uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], 
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], 
+ uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1], 
  uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]) {
 
   int R_pixel_00, R_pixel_01, R_pixel_10, R_pixel_11;
