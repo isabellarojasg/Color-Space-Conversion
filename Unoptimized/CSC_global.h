@@ -2,8 +2,8 @@
 
 #define K 8 // bitwidth
 #define UNITY (1 << K)
-#define IMAGE_ROW_SIZE 65
-#define IMAGE_COL_SIZE 87
+#define IMAGE_ROW_SIZE 64
+#define IMAGE_COL_SIZE 48
 
 // RGB_to_YCC_ROUTINE
 //     1 for CSC_RGB_to_YCC_brute_force_float()
@@ -56,44 +56,16 @@
 #endif
 
 /* prototypes of global functions */
+void CSC_RGB_to_YCC( void);
 void CSC_YCC_to_RGB( void);
-
-typedef struct {
-	unsigned char y;
-	unsigned char cb;
-	unsigned char cr;  
-
-} yccPixel;
-
-typedef struct {
-	int width;
-	int height;
-  yccPixel *pixels;
-} yccImage;
-
-//represents a pixel in an image storing in RGB format
-typedef struct {
-	unsigned char b;
-	unsigned char g;
-	unsigned char r;  
-
-} Pixel;
-
-typedef struct {
-	int width;
-	int height;
-  Pixel *pixels;
-} Image;
-
-void CSC_RGB_to_YCC( Image pic);
 
 /* global variables */
 EXTERN uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Red array pointer
 EXTERN uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Green array pointer
 EXTERN uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Blue array pointer
 EXTERN uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Luminance array pointer
-EXTERN uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]; // Chrominance (Cb) array pointer
-EXTERN uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]; // Chrominance (Cr) array pointer
+EXTERN uint8_t Cb[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Chrominance (Cb) array pointer
+EXTERN uint8_t Cr[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Chrominance (Cr) array pointer
 EXTERN uint8_t Cb_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Chrominance (Cb) temp array pointer
 EXTERN uint8_t Cr_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Chrominance (Cr) temp array pointer
 

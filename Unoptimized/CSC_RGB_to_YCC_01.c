@@ -2,16 +2,15 @@
 // Color Space Conversion (CSC) in fixed-point arithmetic
 // RGB to YCC conversion
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include "CSC_global.h"
 
 // private data
 
 // private prototypes
 // =======
-static void CSC_RGB_to_YCC_brute_force_float( Image pic);
+static void CSC_RGB_to_YCC_brute_force_float( int row, int col);
 
 // =======
 static void CSC_RGB_to_YCC_brute_force_int( int row, int col);
@@ -23,43 +22,52 @@ static uint8_t chrominance_downsample(
 
 // private definitions
 // =======
-static void CSC_RGB_to_YCC_brute_force_float(Image pic) {
+static void CSC_RGB_to_YCC_brute_force_float( int row, int col) {
 //
-  yccImage Y;
-  Y.width = pic.width; 
-  Y.height =  pic.height;
-  Y.pixels = (yccPixel*) malloc (sizeof(yccPixel) * pic.height * pic.width);
+  uint8_t Cb_pixel_00, Cb_pixel_01;
+  uint8_t Cb_pixel_10, Cb_pixel_11;
+  uint8_t Cr_pixel_00, Cr_pixel_01;
+  uint8_t Cr_pixel_10, Cr_pixel_11;
 
+  Y[row+0][col+0] = (uint8_t)(16.0 + 0.257*R[row+0][col+0]
+                                   + 0.504*G[row+0][col+0]
+                                   + 0.098*B[row+0][col+0]);
+  Y[row+0][col+1] = (uint8_t)(16.0 + 0.257*R[row+0][col+1]
+                                   + 0.504*G[row+0][col+1]
+                                   + 0.098*B[row+0][col+1]);
+  Y[row+1][col+0] = (uint8_t)(16.0 + 0.257*R[row+1][col+0]
+                                   + 0.504*G[row+1][col+0]
+                                   + 0.098*B[row+1][col+0]);
+  Y[row+1][col+1] = (uint8_t)(16.0 + 0.257*R[row+1][col+1]
+                                   + 0.504*G[row+1][col+1]
+                                   + 0.098*B[row+1][col+1]);
 
-  int i;
-  for(i = 0; i< pic.height * pic.width; i+=2){
-  Y.pixels[i].y = (uint8_t)(16.0 + 0.098*pic.pixels[i].b
-                                   + 0.504*pic.pixels[i].g
-                                   + 0.257*pic.pixels[i].r);
-  Y.pixels[i+1].y = (uint8_t)(16.0 + 0.098*pic.pixels[i].b
-                                   + 0.504*pic.pixels[i].g
-                                   + 0.257*pic.pixels[i].r);
+  Cb_pixel_00 = (uint8_t)(128.0 - 0.148*R[row+0][col+0]
+                                - 0.291*G[row+0][col+0]
+                                + 0.439*B[row+0][col+0]);
+  Cb_pixel_01 = (uint8_t)(128.0 - 0.148*R[row+0][col+1]
+                                - 0.291*G[row+0][col+1]
+                                + 0.439*B[row+0][col+1]);
+  Cb_pixel_10 = (uint8_t)(128.0 - 0.148*R[row+1][col+0]
+                                - 0.291*G[row+1][col+0]
+                                + 0.439*B[row+1][col+0]);
+  Cb_pixel_11 = (uint8_t)(128.0 - 0.148*R[row+1][col+1]
+                                - 0.291*G[row+1][col+1]
+                                + 0.439*B[row+1][col+1]);
 
-  Y.pixels[i].cb = (uint8_t)(128.0 + 0.439*pic.pixels[i].b
-                                   - 0.291*pic.pixels[i].g
-                                   - 0.148*pic.pixels[i].r);
-  Y.pixels[i+1].cb = (uint8_t)(128.0 + 0.439*pic.pixels[i].b
-                                   - 0.291*pic.pixels[i].g
-                                   - 0.148*pic.pixels[i].r);
-  Y.pixels[i].cr = (uint8_t)(128.0 - 0.071*pic.pixels[i].b
-                                   - 0.368*pic.pixels[i].g
-                                   + 0.439*pic.pixels[i].r);
-  Y.pixels[i+1].cr = (uint8_t)(128.0 - 0.071*pic.pixels[i].b
-                                   - 0.368*pic.pixels[i].g
-                                   + 0.439*pic.pixels[i].r);
-    FILE* outputYFile = fopen("outputY.txt", "wb");
-    int i;
-    // Write the pixel data to the output file
-    for (i = 0; i < Y.height * Y.width; i++) {
-        fprintf(outputYFile, "Pixel %d: Y=%d, Cb=%d, Cr=%d\n", i + 1,
-                Y.pixels[i].y, Y.pixels[i].cb, Y.pixels[i].cr);
-    }
-    fclose(outputYFile);
+  Cr_pixel_00 = (uint8_t)(128.0 + 0.439*R[row+0][col+0]
+                                - 0.368*G[row+0][col+0]
+                                - 0.071*B[row+0][col+0]);
+  Cr_pixel_01 = (uint8_t)(128.0 + 0.439*R[row+0][col+1]
+                                - 0.368*G[row+0][col+1]
+                                - 0.071*B[row+0][col+1]);
+  Cr_pixel_10 = (uint8_t)(128.0 + 0.439*R[row+1][col+0]
+                                - 0.368*G[row+1][col+0]
+                                - 0.071*B[row+1][col+0]);
+  Cr_pixel_11 = (uint8_t)(128.0 + 0.439*R[row+1][col+1]
+                                - 0.368*G[row+1][col+1]
+                                - 0.071*B[row+1][col+1]);
+
   // Cb[row>>1][col>>1] = chrominance_downsample( Cb_pixel_00,
   //                                              Cb_pixel_01,
   //                                              Cb_pixel_10,
@@ -69,7 +77,6 @@ static void CSC_RGB_to_YCC_brute_force_float(Image pic) {
   //                                              Cr_pixel_01,
   //                                              Cr_pixel_10,
   //                                              Cr_pixel_11);
-  }
 } // END of CSC_RGB_to_YCC_brute_force_float()
 
 // =======
@@ -210,29 +217,29 @@ static uint8_t chrominance_downsample(
 } // END of chrominance_downsample()
 
 // =======
-void CSC_RGB_to_YCC(Image pic) {
+void CSC_RGB_to_YCC( void) {
   int row, col; // indices for row and column
 //
-  // for( row=0; row<pic.width * pic.height; row+=2) {
-    // for( col=0; col<IMAGE_COL_SIZE; col+=2) { 
+  for( row=0; row<IMAGE_ROW_SIZE; row+=2) {
+    for( col=0; col<IMAGE_COL_SIZE; col+=2) { 
       //printf( "\n[row,col] = [%02i,%02i]\n\n", row, col);
       switch (RGB_to_YCC_ROUTINE) {
         case 0:
           break;
         case 1:
-          CSC_RGB_to_YCC_brute_force_float( pic);
+          CSC_RGB_to_YCC_brute_force_float( row, col);
           break;
         case 2:
           CSC_RGB_to_YCC_brute_force_int( row, col);
           break;
         default:
           break;
-      
+      }
 //      printf( "Luma_00  = %02hhx\n", Y[row+0][col+0]);
 //      printf( "Luma_01  = %02hhx\n", Y[row+0][col+1]);
 //      printf( "Luma_10  = %02hhx\n", Y[row+1][col+0]);
 //      printf( "Luma_11  = %02hhx\n\n", Y[row+1][col+1]);
-    
+    }
   }
 
 } // END of CSC_RGB_to_YCC()

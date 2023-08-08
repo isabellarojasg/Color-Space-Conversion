@@ -36,20 +36,6 @@ typedef struct {
 } BITMAPINFOHEADER;
 #pragma pack(pop)
 
-//represents a pixel in an image storing in RGB format
-typedef struct {
-	unsigned char b;
-	unsigned char g;
-	unsigned char r;  
-
-} Pixel;
-
-typedef struct {
-	int width;
-	int height;
-  Pixel *pixels;
-} Image;
-
 
 //read image from file and return the Image struct containing image data
 Image readImage(FILE *fp, int height, int width){
@@ -100,8 +86,6 @@ int main( void) {
     BITMAPINFOHEADER info_header;
     fread(&info_header, sizeof(BITMAPINFOHEADER), 1, file);
 
-    // printf("Offset: %u\n", file_header.offset);
-
     // printf("Size: %u\n", info_header.size);
     printf("Width: %d\n", info_header.width);
     printf("Height: %d\n", info_header.height);
@@ -123,181 +107,31 @@ int main( void) {
 
     int padding = (4 - (width * sizeof(Pixel)) % 4) % 4;
     printf("padding: %d\n", padding);
+
+        // Get the data offset
+    uint32_t dataOffset = file_header.offset;
+
+    printf("Data Offset: %u\n", dataOffset);
     // Move to the beginning of pixel data
-    fseek(file, 54, SEEK_SET);
+    fseek(file, dataOffset, SEEK_SET);
     fread(pic.pixels, sizeof(Pixel), pic.height * pic.width, file);
 
    // Image image = readImage(file, height, width);
     fclose(file);
 
-    FILE* outputFile = fopen("output.txt", "wb");
-    int i;
-    // Write the pixel data to the output file
-    for (i = 0; i < pic.height * pic.width; i++) {
-        fprintf(outputFile, "Pixel %d: R=%d, G=%d, B=%d\n", i + 1,
-                pic.pixels[i].r, pic.pixels[i].g, pic.pixels[i].b);
-    }
-
-
-    // printf("Printing Pixel Data:\n");
-    // int y,x;
-    // for (y = 0; y < pic.height; y++) {
-    //     for (x = 0; x < pic.width; x++) {
-    //         //printf("Pixel at (%d, %d) - R: %u, G: %u, B: %u\n", x, y,  pic.pixels[y * pic.width + x].r,
-    //           fwrite( pic.pixels[y * pic.width + x].r, pic.pixels[y * pic.width + x].g,  pic.pixels[y * pic.width + x].b);
-    //     }
+    // FILE* outputFile = fopen("output.txt", "wb");
+    // int i;
+    // // Write the pixel data to the output file
+    // for (i = 0; i < pic.height * pic.width; i++) {
+    //     fprintf(outputFile, "Pixel %d: R=%d, G=%d, B=%d\n", i + 1,
+    //             pic.pixels[i].r, pic.pixels[i].g, pic.pixels[i].b);
     // }
+    // fclose(outputFile);
 
-    fclose(outputFile);
+    CSC_RGB_to_YCC(pic);
+
+
     free(pic.pixels);
-    // // Allocate memory to store pixel data
-    // uint8_t* pixel_data = (uint8_t*)malloc(image_size);
-    // if (pixel_data == NULL) {
-    //     printf("Memory allocation error.\n");
-    //     fclose(file);
-    //     return 1;
-    // }
-
-    // // Read the pixel data from the file
-    // fseek(file, file_header.offset, SEEK_SET);
-    // fread(pixel_data, sizeof(uint8_t), image_size, file);
-
-    // // Close the file
-    // fclose(file);
-
-    // // Separate RGB values
-    // uint8_t* red_channel = (uint8_t*)malloc(width * height * sizeof(uint8_t));
-    // uint8_t* green_channel = (uint8_t*)malloc(width * height * sizeof(uint8_t));
-    // uint8_t* blue_channel = (uint8_t*)malloc(width * height * sizeof(uint8_t));
-
-    // if (red_channel == NULL || green_channel == NULL || blue_channel == NULL) {
-    //   printf("Memory allocation error.\n");
-    //   free(pixel_data);
-    //   free(red_channel);
-    //   free(green_channel);
-    //   free(blue_channel);
-    //   return 1;
-    // }
-
-    // int pixel_index = 0;
-    // int y;
-    // int x;
-    // for (y = 0; y < height; y++) {
-    //     for (x = 0; x < width; x++) {
-    //         // BMP stores pixel data in the order: Blue, Green, Red
-    //         blue_channel[pixel_index] = pixel_data[pixel_index * 3];
-           
-    //         //green_channel[pixel_index] = pixel_data[pixel_index * 3 + 1];
-    //         //red_channel[pixel_index] = pixel_data[pixel_index * 3 + 2];
-    //         pixel_index++;
-    //     }
-    // }
-
-
-    // FILE* blue_file = fopen("blue_channel.bmp", "wb");
-
-    // fwrite(&file_header, sizeof(BITMAPFILEHEADER), 1, blue_file);
-    // fwrite(&info_header, sizeof(BITMAPINFOHEADER), 1, blue_file);
-
-    // fwrite(blue_channel, sizeof(uint8_t), width * height, blue_file);
-
-    // fclose(blue_file);
-
-    // free(pixel_data);
-    // free(red_channel);
-    // free(green_channel);
-    // free(blue_channel);
-//   f_ID_echo_R = fopen( "./Images/R.data", "wb");
-//   if( f_ID_echo_R == NULL) {
-//     printf( "Cannot open file echo_R_64_48_03.\n");
-//     return( 1);
-//   }
-
-//   f_ID_echo_G = fopen( "./Images/G.data", "wb");
-//   if( f_ID_echo_G == NULL) {
-//     printf( "Cannot open file echo_G_64_48_03.\n");
-//     return( 1);
-//   }
-
-//   f_ID_echo_B = fopen( "./Images/B.data", "wb");
-//   if( f_ID_echo_B == NULL) {
-//     printf( "Cannot open file echo_B_64_48_03.\n");
-//     return( 1);
-//   }
-
-//   for( row=0; row < IMAGE_ROW_SIZE; row++)
-//   for( col=0; col < IMAGE_COL_SIZE; col++) {
-//     R[row][col] = (uint8_t)( fgetc( f_ID_input_RGB));
-//     fputc( R[row][col], f_ID_echo_R);
-// //
-//     G[row][col] = (uint8_t)( fgetc( f_ID_input_RGB));
-//     fputc( G[row][col], f_ID_echo_G);
-// //
-//     B[row][col] = (uint8_t)( fgetc( f_ID_input_RGB));
-//     fputc( B[row][col], f_ID_echo_B);
-//   }
-//   fclose( f_ID_echo_B);
-//   fclose( f_ID_echo_G);
-//   fclose( f_ID_echo_R);
-
-  // CSC_RGB_to_YCC();
-
-  // f_ID_output_Y = fopen( "./Images/Y.data", "wb");
-  // if( f_ID_output_Y == NULL) {
-  //   fprintf( stderr, "Could not open %s\n", 
-  //            "./image_output_Y_64_48_03.data");
-  //   return( 1);
-  // }
-  
-  // f_ID_output_Cb = fopen( "./Images/Cb.data", "wb");
-  // if( f_ID_output_Cb == NULL) {
-  //   fprintf( stderr, "Could not open %s\n", 
-  //            "./image_output_Cb_64_48_03.data");
-  //   return( 1);
-  // }
-  
-  // f_ID_output_Cr = fopen( "./Images/Cr.data", "wb");
-  // if( f_ID_output_Cr == NULL) {
-  //   fprintf( stderr, "Could not open %s\n", 
-  //            "./image_output_Cr_64_48_03.data");
-  //   return( 1);
-  // }
-  
-  // for( row=0; row < IMAGE_ROW_SIZE; row++)
-  // for( col=0; col < IMAGE_COL_SIZE; col++) {
-  //   //fprintf( f_ID_output_Y, "%02hhx", Y[row][col]);
-  //   fputc( Y[row][col], f_ID_output_Y);
-  // }
-
-  // for( row=0; row < (IMAGE_ROW_SIZE >> 1); row++)
-  // for( col=0; col < (IMAGE_COL_SIZE >> 1); col++) {
-  //   //fprintf( f_ID_output_Cb, "%02hhx", Cb[row][col]);
-  //   fputc( Cb[row][col], f_ID_output_Cb);
-  //   //fprintf( f_ID_output_Cr, "%02hhx", Cr[row][col]);
-  //   fputc( Cr[row][col], f_ID_output_Cr);
-  // }
-
-  // fclose( f_ID_output_Cr);
-  // fclose( f_ID_output_Cb);
-  // fclose( f_ID_output_Y);
-
-  // CSC_YCC_to_RGB();
-
-  // f_ID_output_RGB = fopen( "./Images/OutputRGB.data", "wb");
-  // if( f_ID_output_RGB == NULL) {
-  //   printf( "Cannot open file RGB_64_48_03.\n");
-  //   return( 1);
-  // }
-
-  // for( row=0; row < IMAGE_ROW_SIZE; row++)
-  // for( col=0; col < IMAGE_COL_SIZE; col++) {
-  //   fputc( R[row][col], f_ID_output_RGB);
-  //   fputc( G[row][col], f_ID_output_RGB);
-  //   fputc( B[row][col], f_ID_output_RGB);
-  // }
-  // fclose( f_ID_output_RGB);
-
-  //gettimeofday(&end_time, NULL); // Record the end time
 
 } // END of main()
 
