@@ -52,14 +52,14 @@ static void CSC_RGB_to_YCC_brute_force_float(Image pic) {
   Y.pixels[i+1].cr = (uint8_t)(128.0 - 0.071*pic.pixels[i].b
                                    - 0.368*pic.pixels[i].g
                                    + 0.439*pic.pixels[i].r);
-    FILE* outputYFile = fopen("outputY.txt", "wb");
-    int i;
-    // Write the pixel data to the output file
-    for (i = 0; i < Y.height * Y.width; i++) {
-        fprintf(outputYFile, "Pixel %d: Y=%d, Cb=%d, Cr=%d\n", i + 1,
-                Y.pixels[i].y, Y.pixels[i].cb, Y.pixels[i].cr);
-    }
-    fclose(outputYFile);
+    // FILE* outputYFile = fopen("outputY.txt", "wb");
+    // int i;
+    // // Write the pixel data to the output file
+    // for (i = 0; i < Y.height * Y.width; i++) {
+    //     fprintf(outputYFile, "Pixel %d: Y=%d, Cb=%d, Cr=%d\n", i + 1,
+    //             Y.pixels[i].y, Y.pixels[i].cb, Y.pixels[i].cr);
+    // }
+    // fclose(outputYFile);
   // Cb[row>>1][col>>1] = chrominance_downsample( Cb_pixel_00,
   //                                              Cb_pixel_01,
   //                                              Cb_pixel_10,

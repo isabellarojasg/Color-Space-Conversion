@@ -68,15 +68,15 @@ static void CSC_RGB_to_YCC_brute_force_float( int row, int col) {
                                 - 0.368*G[row+1][col+1]
                                 - 0.071*B[row+1][col+1]);
 
-  // Cb[row>>1][col>>1] = chrominance_downsample( Cb_pixel_00,
-  //                                              Cb_pixel_01,
-  //                                              Cb_pixel_10,
-  //                                              Cb_pixel_11);
+  Cb[row>>1][col>>1] = chrominance_downsample( Cb_pixel_00,
+                                               Cb_pixel_01,
+                                               Cb_pixel_10,
+                                               Cb_pixel_11);
 
-  // Cr[row>>1][col>>1] = chrominance_downsample( Cr_pixel_00,
-  //                                              Cr_pixel_01,
-  //                                              Cr_pixel_10,
-  //                                              Cr_pixel_11);
+  Cr[row>>1][col>>1] = chrominance_downsample( Cr_pixel_00,
+                                               Cr_pixel_01,
+                                               Cr_pixel_10,
+                                               Cr_pixel_11);
 } // END of CSC_RGB_to_YCC_brute_force_float()
 
 // =======
@@ -241,6 +241,7 @@ void CSC_RGB_to_YCC( void) {
 //      printf( "Luma_11  = %02hhx\n\n", Y[row+1][col+1]);
     }
   }
+
 
 } // END of CSC_RGB_to_YCC()
 

@@ -8,18 +8,18 @@
 // RGB_to_YCC_ROUTINE
 //     1 for CSC_RGB_to_YCC_brute_force_float()
 //     2 for CSC_RGB_to_YCC_brute_force_int()
-#define RGB_to_YCC_ROUTINE 1
+#define RGB_to_YCC_ROUTINE 2
 
 // YCC_to_RGB_ROUTINE
 //     1 for CSC_YCC_to_RGB_brute_force_float()
 //     2 for CSC_YCC_to_RGB_brute_force_int()
-#define YCC_to_RGB_ROUTINE 1
+#define YCC_to_RGB_ROUTINE 2
 
 // CHROMINANCE_DOWNSAMPLING_MODE = 
 //     0 for returning zero (no chrominance)
 //     1 for discarding three pixels and keeping one
 //     2 for averaging four pixels
-#define CHROMINANCE_DOWNSAMPLING_MODE 0
+#define CHROMINANCE_DOWNSAMPLING_MODE 1
 
 // CHROMINANCE_UPSAMPLING_MODE = 
 //     0 for returning zero (no chrominance)
@@ -64,8 +64,8 @@ EXTERN uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Red array pointer
 EXTERN uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Green array pointer
 EXTERN uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Blue array pointer
 EXTERN uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Luminance array pointer
-EXTERN uint8_t Cb[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Chrominance (Cb) array pointer
-EXTERN uint8_t Cr[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Chrominance (Cr) array pointer
+EXTERN uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]; // Chrominance (Cb) array pointer
+EXTERN uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]; // Chrominance (Cr) array pointer
 EXTERN uint8_t Cb_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Chrominance (Cb) temp array pointer
 EXTERN uint8_t Cr_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; // Chrominance (Cr) temp array pointer
 

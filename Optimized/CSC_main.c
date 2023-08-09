@@ -65,7 +65,7 @@ int main( void) {
   
   int row, col;
     // Open the BMP file for reading
-    FILE* file = fopen("./Images/new.bmp", "rb");
+    FILE* file = fopen("../Images/new.bmp", "rb");
     if (file == NULL) {
         printf("Error opening file.\n");
         return 1;
