@@ -9,10 +9,6 @@
 
 // private data
 
-// private prototypes
-// =======
-static void CSC_RGB_to_YCC_brute_force_float( Image pic);
-
 // =======
 static void CSC_RGB_to_YCC_brute_force_int( int row, int col);
 
@@ -20,57 +16,6 @@ static void CSC_RGB_to_YCC_brute_force_int( int row, int col);
 static uint8_t chrominance_downsample(
     uint8_t C_pixel_1, uint8_t C_pixel_2,
     uint8_t C_pixel_3, uint8_t C_pixel_4);
-
-// private definitions
-// =======
-static void CSC_RGB_to_YCC_brute_force_float(Image pic) {
-//
-  yccImage Y;
-  Y.width = pic.width; 
-  Y.height =  pic.height;
-  Y.pixels = (yccPixel*) malloc (sizeof(yccPixel) * pic.height * pic.width);
-
-
-  int i;
-  for(i = 0; i< pic.height * pic.width; i+=2){
-  Y.pixels[i].y = (uint8_t)(16.0 + 0.098*pic.pixels[i].b
-                                   + 0.504*pic.pixels[i].g
-                                   + 0.257*pic.pixels[i].r);
-  Y.pixels[i+1].y = (uint8_t)(16.0 + 0.098*pic.pixels[i].b
-                                   + 0.504*pic.pixels[i].g
-                                   + 0.257*pic.pixels[i].r);
-
-  Y.pixels[i].cb = (uint8_t)(128.0 + 0.439*pic.pixels[i].b
-                                   - 0.291*pic.pixels[i].g
-                                   - 0.148*pic.pixels[i].r);
-  Y.pixels[i+1].cb = (uint8_t)(128.0 + 0.439*pic.pixels[i].b
-                                   - 0.291*pic.pixels[i].g
-                                   - 0.148*pic.pixels[i].r);
-  Y.pixels[i].cr = (uint8_t)(128.0 - 0.071*pic.pixels[i].b
-                                   - 0.368*pic.pixels[i].g
-                                   + 0.439*pic.pixels[i].r);
-  Y.pixels[i+1].cr = (uint8_t)(128.0 - 0.071*pic.pixels[i].b
-                                   - 0.368*pic.pixels[i].g
-                                   + 0.439*pic.pixels[i].r);
-    // FILE* outputYFile = fopen("outputY.txt", "wb");
-    // int i;
-    // // Write the pixel data to the output file
-    // for (i = 0; i < Y.height * Y.width; i++) {
-    //     fprintf(outputYFile, "Pixel %d: Y=%d, Cb=%d, Cr=%d\n", i + 1,
-    //             Y.pixels[i].y, Y.pixels[i].cb, Y.pixels[i].cr);
-    // }
-    // fclose(outputYFile);
-  // Cb[row>>1][col>>1] = chrominance_downsample( Cb_pixel_00,
-  //                                              Cb_pixel_01,
-  //                                              Cb_pixel_10,
-  //                                              Cb_pixel_11);
-
-  // Cr[row>>1][col>>1] = chrominance_downsample( Cr_pixel_00,
-  //                                              Cr_pixel_01,
-  //                                              Cr_pixel_10,
-  //                                              Cr_pixel_11);
-  }
-} // END of CSC_RGB_to_YCC_brute_force_float()
 
 // =======
 static void CSC_RGB_to_YCC_brute_force_int( int row, int col) {
@@ -216,24 +161,62 @@ void CSC_RGB_to_YCC(Image pic) {
   // for( row=0; row<pic.width * pic.height; row+=2) {
     // for( col=0; col<IMAGE_COL_SIZE; col+=2) { 
       //printf( "\n[row,col] = [%02i,%02i]\n\n", row, col);
-      switch (RGB_to_YCC_ROUTINE) {
-        case 0:
-          break;
-        case 1:
-          CSC_RGB_to_YCC_brute_force_float( pic);
-          break;
-        case 2:
-          CSC_RGB_to_YCC_brute_force_int( row, col);
-          break;
-        default:
-          break;
       
-//      printf( "Luma_00  = %02hhx\n", Y[row+0][col+0]);
-//      printf( "Luma_01  = %02hhx\n", Y[row+0][col+1]);
-//      printf( "Luma_10  = %02hhx\n", Y[row+1][col+0]);
-//      printf( "Luma_11  = %02hhx\n\n", Y[row+1][col+1]);
-    
-  }
+  yccImage Y;
+  Y.width = pic.width; 
+  Y.height =  pic.height;
+  Y.pixels = (yccPixel*) malloc (sizeof(yccPixel) * pic.height * pic.width);
 
+
+  int i;
+  for(i = 0; i< pic.height * pic.width; i+=2){
+  Y.pixels[i].y = 16 + ((6391*pic.pixels[i].b
+                + 32909*pic.pixels[i].g
+                +  16763*pic.pixels[i].r)>>16);
+ 
+  Y.pixels[i+1].y = 16 + ((6391*pic.pixels[i+1].b
+                + 32909*pic.pixels[i+1].g
+                +  16763*pic.pixels[i+1].r)>>16);                     
+
+
+  Y.pixels[i].cb = 128.0 + ((28672*pic.pixels[i].b
+                                   - 18996*pic.pixels[i].g
+                                   - 9676*pic.pixels[i].r)>>16);
+
+  Y.pixels[i+1].cb = 128.0 + ((28672*pic.pixels[i+1].b
+                                   - 18996*pic.pixels[i+1].g
+                                   - 9676*pic.pixels[i+1].r)>>16);
+
+  Y.pixels[i].cr = 128.0 +((- 4662*pic.pixels[i].b
+                                   - 24009*pic.pixels[i].g
+                                   + 28672*pic.pixels[i].r)>>16);
+  Y.pixels[i+1].cr = 128.0 +((- 4662*pic.pixels[i+1].b
+                                   - 24009*pic.pixels[i+1].g
+                                   + 28672*pic.pixels[i+1].r)>>16); 
+
+
+  }
+    printf("Pixel[%d]: y = %d, cb = %d, cr = %d\n", i, Y.pixels[0].y, Y.pixels[0].cb, Y.pixels[0].cr);
+    printf("Pixel[%d]: y = %d, cb = %d, cr = %d\n", i, Y.pixels[962].y, Y.pixels[962].cb, Y.pixels[962].cr);
+    printf("Pixel[%d]: y = %d, cb = %d, cr = %d\n", i, Y.pixels[2870].y, Y.pixels[2870].cb, Y.pixels[2870].cr);
+
+    // Open the output file for writing
+    // FILE* output_file = fopen("outputYCC.txt", "wb");
+    // if (output_file == NULL) {
+    //     perror("Error opening output file");
+    // }
+
+    // // Write the YCC pixel components to the output file
+    // int j;
+    // for (j = 0; j < Y.width * Y.height; j++) {
+    //         fprintf(output_file, "Pixel %d: Y=%d, Cb=%d, Cr=%d\n", j + 1,
+    //           Y.pixels[j].y, Y.pixels[j].cb, Y.pixels[j].cr);
+    // }
+
+    // // Close the output file
+    // fclose(output_file);
+
+    // Free allocated memory
+    free(Y.pixels);
 } // END of CSC_RGB_to_YCC()
 

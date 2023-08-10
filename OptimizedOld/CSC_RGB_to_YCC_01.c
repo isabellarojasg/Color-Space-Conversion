@@ -95,30 +95,21 @@ static void CSC_RGB_to_YCC_brute_force_int(Image pic) {
   int Cb_pixel_00, Cb_pixel_01, Cb_pixel_10, Cb_pixel_11;
   int Cr_pixel_00, Cr_pixel_01, Cr_pixel_10, Cr_pixel_11;
 
-  // R_pixel_00 = (int)R[row+0][col+0];
-  // R_pixel_01 = (int)R[row+0][col+1];
-  // R_pixel_10 = (int)R[row+1][col+0];
-  // R_pixel_11 = (int)R[row+1][col+1];
-
-  // G_pixel_00 = (int)G[row+0][col+0];
-  // G_pixel_01 = (int)G[row+0][col+1];
-  // G_pixel_10 = (int)G[row+1][col+0];
-  // G_pixel_11 = (int)G[row+1][col+1];
-
-  // B_pixel_00 = (int)B[row+0][col+0];
-  // B_pixel_01 = (int)B[row+0][col+1];
-  // B_pixel_10 = (int)B[row+1][col+0];
-  // B_pixel_11 = (int)B[row+1][col+1];
-
-
   yccImage Y;
   Y.width = pic.width; 
   Y.height =  pic.height;
   Y.pixels = (yccPixel*) malloc (sizeof(yccPixel) * pic.height * pic.width);
+   // Open the output file for writing
+    FILE* output_file = fopen("outputYCC.txt", "wb");
+    if (output_file == NULL) {
+        perror("Error opening output file");
+    }
+
+
 
 
   int i;
-  for(i = 0; i< pic.height * pic.width; i+=2){
+  for(i = 0; i< pic.height * pic.width; i+=4){
   Y_pixel_00 = (16 << (K)) + C13 * pic.pixels[i].b
                            + C12 * pic.pixels[i].g
                            + C11 * pic.pixels[i].r;
@@ -131,45 +122,82 @@ static void CSC_RGB_to_YCC_brute_force_int(Image pic) {
   Y_pixel_01 += (1 << (K-1)); // rounding
   Y_pixel_01 = Y_pixel_01 >> K;
 
+  Y_pixel_10 = (16 << (K)) + C13 * pic.pixels[i+2].b
+                           + C12 * pic.pixels[i+2].g
+                           + C11 * pic.pixels[i+2].r;
+  Y_pixel_10 += (1 << (K-1)); // rounding
+  Y_pixel_10 = Y_pixel_10 >> K;
+
+  Y_pixel_11 = (16 << (K)) + C13 * pic.pixels[i+3].b
+                           + C12 * pic.pixels[i+3].g
+                           + C11 * pic.pixels[i+3].r;
+  Y_pixel_11 += (1 << (K-1)); // rounding
+  Y_pixel_11 = Y_pixel_11 >> K;
+
+
   Y.pixels[i].y = (uint8_t)Y_pixel_00;
   Y.pixels[i+1].y = (uint8_t)Y_pixel_01;
+  Y.pixels[i+2].y = (uint8_t)Y_pixel_10;
+  Y.pixels[i+3].y = (uint8_t)Y_pixel_11;
 
-  Cb_pixel_00 = (128 << (K)) - C23 *  pic.pixels[i].b
+  Cb_pixel_00 = (128 << (K)) + C23 *  pic.pixels[i].b
                              - C22 *  pic.pixels[i].g
-                             + C21 *  pic.pixels[i].r;
+                             - C21 *  pic.pixels[i].r;
   Cb_pixel_00 += (1 << (K-1)); // rounding
   Cb_pixel_00 = Cb_pixel_00 >> K;
 
-  Cb_pixel_01 = (128 << (K)) - C23 *  pic.pixels[i+1].b
-                             - C22 *  pic.pixels[i+1].g
-                             + C21 *  pic.pixels[i+1].r;
+  Cb_pixel_01 = (128 << (K)) + C23 *  pic.pixels[i].b
+                             - C22 *  pic.pixels[i].g
+                             - C21 *  pic.pixels[i].r;
   Cb_pixel_01 += (1 << (K-1)); // rounding
   Cb_pixel_01 = Cb_pixel_01 >> K;
 
-  // Cr_pixel_00 = (128 << (K)) + C31 * R_pixel_00
-  //                            - C32 * G_pixel_00
-  //                            - C33 * B_pixel_00;
-  // Cr_pixel_00 += (1 << (K-1)); // rounding
-  // Cr_pixel_00 = Cr_pixel_00 >> K;
+  Cb_pixel_10 = (128 << (K)) + C23 *  pic.pixels[i].b
+                             - C22 *  pic.pixels[i].g
+                             - C21 *  pic.pixels[i].r;
+  Cb_pixel_10 += (1 << (K-1)); // rounding
+  Cb_pixel_10 = Cb_pixel_10 >> K;
 
-  // Cr_pixel_01 = (128 << (K)) + C31 * R_pixel_01
-  //                            - C32 * G_pixel_01
-  //                            - C33 * B_pixel_01;
-  // Cr_pixel_01 += (1 << (K-1)); // rounding
-  // Cr_pixel_01 = Cr_pixel_01 >> K;
+  Cb_pixel_11 = (128 << (K)) + C23 *  pic.pixels[i].b
+                             - C22 *  pic.pixels[i].g
+                             - C21 *  pic.pixels[i].r;
+  Cb_pixel_11 += (1 << (K-1)); // rounding
+  Cb_pixel_11 = Cb_pixel_11 >> K;
 
-  // Cr_pixel_10 = (128 << (K)) + C31 * R_pixel_10
-  //                            - C32 * G_pixel_10
-  //                            - C33 * B_pixel_10;
-  // Cr_pixel_10 += (1 << (K-1)); // rounding
-  // Cr_pixel_10 = Cr_pixel_10 >> K;
+  Y.pixels[i].cb = (uint8_t)Cb_pixel_00;
+  Y.pixels[i+1].cb = (uint8_t)Cb_pixel_01;
+  Y.pixels[i+2].cb = (uint8_t)Cb_pixel_10;
+  Y.pixels[i+3].cb = (uint8_t)Cb_pixel_11;
 
-  // Cr_pixel_11 = (128 << (K)) + C31 * R_pixel_11
-  //                            - C32 * G_pixel_11
-  //                            - C33 * B_pixel_11;
-  // Cr_pixel_11 += (1 << (K-1)); // rounding
-  // Cr_pixel_11 = Cr_pixel_11 >> K;
+  Cr_pixel_00 = (128 << (K)) - C33 *  pic.pixels[i].b
+                             - C32 *  pic.pixels[i].g
+                             + C31 *  pic.pixels[i].r;
+  Cr_pixel_00 += (1 << (K-1)); // rounding
+  Cr_pixel_00 = Cr_pixel_00 >> K;
 
+  Cr_pixel_01 = (128 << (K)) - C33 *  pic.pixels[i].b
+                             - C32 *  pic.pixels[i].g
+                             + C31 *  pic.pixels[i].r;
+  Cr_pixel_01 += (1 << (K-1)); // rounding
+  Cr_pixel_01 = Cr_pixel_01 >> K;
+
+  Cr_pixel_10 = (128 << (K)) - C33 *  pic.pixels[i].b
+                             - C32 *  pic.pixels[i].g
+                             + C31 *  pic.pixels[i].r;
+  Cr_pixel_10 += (1 << (K-1)); // rounding
+  Cr_pixel_10 = Cr_pixel_10 >> K;
+
+  Cr_pixel_11 = (128 << (K)) - C33 *  pic.pixels[i].b
+                             - C32 *  pic.pixels[i].g
+                             + C31 *  pic.pixels[i].r;
+  Cr_pixel_11 += (1 << (K-1)); // rounding
+  Cr_pixel_11 = Cr_pixel_11 >> K;
+
+
+  Y.pixels[i].cr = (uint8_t)Cr_pixel_00;
+  Y.pixels[i+1].cr = (uint8_t)Cr_pixel_01;
+  Y.pixels[i+2].cr = (uint8_t)Cr_pixel_10;
+  Y.pixels[i+3].cr = (uint8_t)Cr_pixel_11;
   // Cb[row>>1][col>>1] = chrominance_downsample( (uint8_t)Cb_pixel_00,
   //                                              (uint8_t)Cb_pixel_01,
   //                                              (uint8_t)Cb_pixel_10,
@@ -179,12 +207,16 @@ static void CSC_RGB_to_YCC_brute_force_int(Image pic) {
   //                                              (uint8_t)Cr_pixel_01,
   //                                              (uint8_t)Cr_pixel_10,
   //                                              (uint8_t)Cr_pixel_11);
+  fprintf(output_file, "Pixel %d: Y=%d, Cb=%d, Cr=%d\n", i,
+              Y.pixels[i].y, Y.pixels[i].cb, Y.pixels[i].cr);
   }
+    // Close the output file
+    fclose(output_file);
+    // printf("Pixel[%d]: y = %d, cb= %d, cr= %d\n", i, Y.pixels[0].y,Y.pixels[0].cb,Y.pixels[0].cr);
+    // printf("Pixel[%d]: y = %d, cb= %d, cr= %d\n", i, Y.pixels[962].y,Y.pixels[962].cb,Y.pixels[962].cr);
+    // printf("Pixel[%d]: y = %d, cb= %d, cr= %d\n", i, Y.pixels[2870].y,Y.pixels[2870].cb,Y.pixels[2870].cr);
 
-    printf("Pixel[%d]: y = %d\n", i, Y.pixels[0].y);
-    printf("Pixel[%d]: y = %d\n", i, Y.pixels[962].y);
-    printf("Pixel[%d]: y = %d\n", i, Y.pixels[2870].y);
-
+    free(Y.pixels);
 
 } // END of CSC_RGB_to_YCC_brute_force_int()
 

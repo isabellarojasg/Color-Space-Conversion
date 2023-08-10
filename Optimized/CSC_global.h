@@ -59,9 +59,9 @@
 void CSC_YCC_to_RGB( void);
 
 typedef struct {
-	unsigned char y;
-	unsigned char cb;
-	unsigned char cr;  
+	uint8_t y;
+	uint8_t cb;
+	uint8_t cr;  
 
 } yccPixel;
 
@@ -73,9 +73,9 @@ typedef struct {
 
 //represents a pixel in an image storing in RGB format
 typedef struct {
-	unsigned char b;
-	unsigned char g;
-	unsigned char r;  
+	uint8_t b;
+	uint8_t g;
+	uint8_t r;  
 
 } Pixel;
 
