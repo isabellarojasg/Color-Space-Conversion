@@ -59,6 +59,22 @@
 void CSC_YCC_to_RGB( void);
 
 typedef struct {
+	uint8_t y1;
+    uint8_t y2;
+    uint8_t y3;
+    uint8_t y4;
+	uint8_t cb;
+	uint8_t cr;  
+
+} yccDSPPixel;
+
+typedef struct {
+	int width;
+	int height;
+  yccDSPPixel *pixels;
+} yccDSPImage;
+
+typedef struct {
 	uint8_t y;
 	uint8_t cb;
 	uint8_t cr;  
