@@ -12,6 +12,20 @@
 #define GLOBAL
 #include "CSC_global.h"
 
+void CSC_RGB_to_YCC( uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE],
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE],
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1],
+ uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]);
+
+void CSC_YCC_to_RGB(uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Red array pointer
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Green array pointer
+ uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Blue array pointer
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Luminance array pointer
+ uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1], // Chrominance (Cb) array pointer
+ uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1], // Chrominance (Cr) array pointer
+ uint8_t Cb_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE], // Chrominance (Cb) temp array pointer
+ uint8_t Cr_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]);
+
 int main( void) {
   int row, col;
   FILE *f_ID_input_RGB;
@@ -24,6 +38,15 @@ int main( void) {
   FILE *f_ID_output_RGB;
   struct timeval start_time, end_time;
   double latency;
+
+  uint8_t R[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; 
+ uint8_t G[IMAGE_ROW_SIZE][IMAGE_COL_SIZE];
+ uint8_t B[IMAGE_ROW_SIZE][IMAGE_COL_SIZE];
+ uint8_t Y[IMAGE_ROW_SIZE][IMAGE_COL_SIZE];
+ uint8_t Cb[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1];
+ uint8_t Cr[IMAGE_ROW_SIZE >> 1][IMAGE_COL_SIZE >> 1]; 
+ uint8_t Cb_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE]; 
+ uint8_t Cr_temp[IMAGE_ROW_SIZE][IMAGE_COL_SIZE];
 
   gettimeofday(&start_time, NULL); // Record the start time
 
@@ -55,10 +78,10 @@ int main( void) {
   for( col=0; col < IMAGE_COL_SIZE; col++) {
     R[row][col] = (uint8_t)( fgetc( f_ID_input_RGB));
     fputc( R[row][col], f_ID_echo_R);
-//
+
     G[row][col] = (uint8_t)( fgetc( f_ID_input_RGB));
     fputc( G[row][col], f_ID_echo_G);
-//
+
     B[row][col] = (uint8_t)( fgetc( f_ID_input_RGB));
     fputc( B[row][col], f_ID_echo_B);
   }
@@ -67,7 +90,10 @@ int main( void) {
   fclose( f_ID_echo_R);
   fclose( f_ID_input_RGB);
 
-  CSC_RGB_to_YCC();
+
+  CSC_RGB_to_YCC(R,G,B,Y,Cb,Cr);
+
+  printf( "Here 1\n");
 
   f_ID_output_Y = fopen( "./image_output_Y_64_48_03.data", "wb");
   if( f_ID_output_Y == NULL) {
@@ -90,6 +116,8 @@ int main( void) {
     return( 1);
   }
   
+    printf( "Here 2\n");
+
   for( row=0; row < IMAGE_ROW_SIZE; row++)
   for( col=0; col < IMAGE_COL_SIZE; col++) {
     //fprintf( f_ID_output_Y, "%02hhx", Y[row][col]);
@@ -103,12 +131,16 @@ int main( void) {
     //fprintf( f_ID_output_Cr, "%02hhx", Cr[row][col]);
     fputc( Cr[row][col], f_ID_output_Cr);
   }
+  printf( "Here 3\n");
 
   fclose( f_ID_output_Cr);
   fclose( f_ID_output_Cb);
   fclose( f_ID_output_Y);
 
-  CSC_YCC_to_RGB();
+  printf( "Here 4\n");
+  CSC_YCC_to_RGB(R,G,B,Y,Cb,Cr, Cb_temp, Cr_temp);
+
+
 
   f_ID_output_RGB = fopen( "./image_output_RGB_64_48_03.data", "wb");
   if( f_ID_output_RGB == NULL) {
