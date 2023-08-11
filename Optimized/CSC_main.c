@@ -36,8 +36,14 @@ typedef struct {
 } BITMAPINFOHEADER;
 #pragma pack(pop)
 
-void CSC_RGB_to_YCC(Image pic) {
-      
+Image CSC_RGB_to_YCC(Image pic) {
+    int R_pixel_00, R_pixel_01, R_pixel_10, R_pixel_11;
+  int G_pixel_00, G_pixel_01, G_pixel_10, G_pixel_11;
+  int B_pixel_00, B_pixel_01, B_pixel_10, B_pixel_11;
+
+  int  Y_pixel_00,  Y_pixel_01,  Y_pixel_10,  Y_pixel_11;
+  int Cb_pixel_00, Cb_pixel_01, Cb_pixel_10, Cb_pixel_11;
+  int Cr_pixel_00, Cr_pixel_01, Cr_pixel_10, Cr_pixel_11;    
   yccImage Y;
   Y.width = pic.width; 
   Y.height =  pic.height;
@@ -50,47 +56,89 @@ void CSC_RGB_to_YCC(Image pic) {
   int i;
   //Can probably loop unroll up to 4 in parallel
   for(i = 0; i< pic.height * pic.width; i+=2){
-    Y.pixels[i].y = 16 + ((6391*pic.pixels[i].b
-                  + 32909*pic.pixels[i].g
-                  +  16763*pic.pixels[i].r)>>16);
+    Y.pixels[i].y = 16 + ((25*pic.pixels[i].b
+                  + 129*pic.pixels[i].g
+                  +  66*pic.pixels[i].r)>>8);
   
-    Y.pixels[i+1].y = 16 + ((6391*pic.pixels[i+1].b
-                  + 32909*pic.pixels[i+1].g
-                  +  16763*pic.pixels[i+1].r)>>16);                     
+    Y.pixels[i+1].y = 16 + ((25*pic.pixels[i+1].b
+                  + 129*pic.pixels[i].g
+                  +  66*pic.pixels[i].r)>>8);                    
 
-    Y.pixels[i].cb = 128.0 + ((28672*pic.pixels[i].b
-                                    - 18996*pic.pixels[i].g
-                                    - 9676*pic.pixels[i].r)>>16);
+    Y.pixels[i].cb = 128.0 + ((112*pic.pixels[i].b
+                                    - 74*pic.pixels[i].g
+                                    - 38*pic.pixels[i].r)>>8);
 
-    Y.pixels[i+1].cb = 128.0 + ((28672*pic.pixels[i+1].b
-                                    - 18996*pic.pixels[i+1].g
-                                    - 9676*pic.pixels[i+1].r)>>16);
+    Y.pixels[i+1].cb = 128.0 + ((112*pic.pixels[i+1].b
+                                    - 74*pic.pixels[i+1].g
+                                    - 38*pic.pixels[i+1].r)>>8);
 
-    Y.pixels[i].cr = 128.0 +((- 4662*pic.pixels[i].b
-                                    - 24009*pic.pixels[i].g
-                                    + 28672*pic.pixels[i].r)>>16);
-    Y.pixels[i+1].cr = 128.0 +((- 4662*pic.pixels[i+1].b
-                                    - 24009*pic.pixels[i+1].g
-                                    + 28672*pic.pixels[i+1].r)>>16); 
+    Y.pixels[i].cr = 128.0 +((- 18*pic.pixels[i].b
+                                    - 94*pic.pixels[i].g
+                                    + 112*pic.pixels[i].r)>>8);
+    Y.pixels[i+1].cr = 128.0 +((- 18*pic.pixels[i+1].b
+                                    - 94*pic.pixels[i+1].g
+                                    + 112*pic.pixels[i+1].r)>>8);
   }
 
-  // Perform Downsampling
-  yccDSPImage yDSP;
-  yDSP.pixels = (yccDSPPixel *)malloc(sizeof(yccDSPPixel) * size >> 2);
-  int k=0;
-  int j;
-  for(i = 0; i < Y.height >> 1; i++){
-    for(j = 0; j < Y.width >> 1; j++){
-      int index = i * 2 * width + j * 2;
-      yDSP.pixels[k].y1 = Y.pixels[index].y;
-      yDSP.pixels[k].y2 = Y.pixels[index+1].y;
-      yDSP.pixels[k].y3 = Y.pixels[index+width].y;
-      yDSP.pixels[k].y4 = Y.pixels[index+width+1].y;
-      yDSP.pixels[k].cb = (Y.pixels[index].cb + Y.pixels[index+1].cb + Y.pixels[index+width].cb + Y.pixels[index+width+1].cb) >> 2;
-      yDSP.pixels[k].cr = (Y.pixels[index].cr + Y.pixels[index+1].cr + Y.pixels[index+width].cr + Y.pixels[index+width+1].cr) >> 2;
-      k++;
+    FILE* output_file = fopen("outputYCC.txt", "wb");
+    if (output_file == NULL) {
+        perror("Error opening output file");
     }
+  for(i =0; i < size; i++){
+  fprintf(output_file, "Pixel %d: Y=%d, Cb=%d, Cr=%d\n", i,
+              Y.pixels[i].y, Y.pixels[i].cb, Y.pixels[i].cr);
   }
+    // Close the output file
+    fclose(output_file);
+
+  //YCC to RGB 
+  Image yccRGB;
+  yccRGB.height = height;
+  yccRGB.width = width;
+
+  yccRGB.pixels = (Pixel*) malloc (sizeof(Pixel) * yccRGB.height * yccRGB.width);
+
+  for(i = 0; i< size; i++){
+
+    int y1 = 74*(Y.pixels[i].y -16);
+    int r1 = (y1 + 102*(Y.pixels[i].cr - 128)) >> 6;
+    int g1 = ((y1 - 52*(Y.pixels[i].cr - 128) - 25*(Y.pixels[i].cb - 128))) >> 6;
+    int b1 = (y1 + 129*(Y.pixels[i].cb - 128)) >> 6;
+
+    yccRGB.pixels[i].r = r1 > 255 ? 255 : (r1 < 0 ? 0 : r1);
+    yccRGB.pixels[i].g = g1 > 255 ? 255 : (g1 < 0 ? 0 : g1);
+    yccRGB.pixels[i].b = b1 > 255 ? 255 : (b1 < 0 ? 0 : b1);
+  }
+
+  return yccRGB;
+    // FILE* outputFile = fopen("outputRGB.txt", "wb");
+    
+    // // Write the pixel data to the output file
+    // for (i = 0; i < size; i++) {
+    //     // fprintf(outputFile, "Pixel %d: R=%d, G=%d, B=%d\n", i + 1,
+    //     //         yccRGB.pixels[i].r, yccRGB.pixels[i].g, yccRGB.pixels[i].b);
+    //           fprintf(outputFile, "Pixel %d:  B=%d,  G=%d, R=%d\n", i + 1,
+    //              yccRGB.pixels[i].b, yccRGB.pixels[i].g, yccRGB.pixels[i].r);
+        
+    // }
+    // fclose(outputFile);
+  // Perform Downsampling
+  // yccDSPImage yDSP;
+  // yDSP.pixels = (yccDSPPixel *)malloc(sizeof(yccDSPPixel) * size >> 2);
+  // int k=0;
+  // int j;
+  // for(i = 0; i < Y.height >> 1; i++){
+  //   for(j = 0; j < Y.width >> 1; j++){
+  //     int index = i * 2 * width + j * 2;
+  //     yDSP.pixels[k].y1 = Y.pixels[index].y;
+  //     yDSP.pixels[k].y2 = Y.pixels[index+1].y;
+  //     yDSP.pixels[k].y3 = Y.pixels[index+width].y;
+  //     yDSP.pixels[k].y4 = Y.pixels[index+width+1].y;
+  //     yDSP.pixels[k].cb = (Y.pixels[index].cb + Y.pixels[index+1].cb + Y.pixels[index+width].cb + Y.pixels[index+width+1].cb) >> 2;
+  //     yDSP.pixels[k].cr = (Y.pixels[index].cr + Y.pixels[index+1].cr + Y.pixels[index+width].cr + Y.pixels[index+width+1].cr) >> 2;
+  //     k++;
+  //   }
+  // }
     // // //Open the output file for writing
     // FILE* output_file = fopen("outputDownsampled.txt", "wb");
     // if (output_file == NULL) {
@@ -107,7 +155,10 @@ void CSC_RGB_to_YCC(Image pic) {
     // fclose(output_file);
 
     // Free allocated memory
-    free(yDSP.pixels);
+    
+    
+    
+    //free(yDSP.pixels);
 
     free(Y.pixels);
 } // END of CSC_RGB_to_YCC()
@@ -181,7 +232,7 @@ int main( void) {
     // }
     // fclose(outputFile);
 
-    CSC_RGB_to_YCC(pic);
+    Image outputImage = CSC_RGB_to_YCC(pic);
 
 
     free(pic.pixels);
