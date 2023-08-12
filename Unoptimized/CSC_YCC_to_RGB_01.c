@@ -407,7 +407,6 @@ void CSC_YCC_to_RGB( void) {
     }
   }
 
-  printf("closing");
   fclose(outputYCCtoRGBFile);
 
 
