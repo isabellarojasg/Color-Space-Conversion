@@ -22,7 +22,7 @@ int main( void) {
   FILE *f_ID_output_Cr;
   FILE *f_ID_output_RGB;
 
-  f_ID_input_RGB = fopen( "../Images/image_input_RGB_64_48_03.data", "rb");
+  f_ID_input_RGB = fopen( "../Images/BigImage.data", "rb");
   if( f_ID_input_RGB == NULL) {
     printf( "Cannot open file input RGB.\n");
     return( 1);
@@ -105,7 +105,7 @@ int main( void) {
 
   CSC_YCC_to_RGB();
 
-  f_ID_output_RGB = fopen( "./image_output_RGB_64_48_03.data", "wb");
+  f_ID_output_RGB = fopen( "./unoptimized_RGB.data", "wb");
   if( f_ID_output_RGB == NULL) {
     printf( "Cannot open file.\n");
     return( 1);

@@ -194,7 +194,7 @@ yccDSPImage CSC_RGB_to_YCC(Image pic) {
 int main( void) {
 
     // Open the BMP file for reading
-    FILE* file = fopen("../Images/new.bmp", "rb");
+    FILE* file = fopen("../Images/BigImage.bmp", "rb");
     if (file == NULL) {
         printf("Error opening file.\n");
         return 1;
