@@ -85,11 +85,11 @@ Image CSC_YCC_to_RGB(yccDSPImage yccDSP, int height, int width){
   yccImage Y;
   Y.pixels = (yccPixel*) malloc (sizeof(yccPixel) * height * width);
 
-  register int k=0;
-  register int j,i;
+  int k=0;
+  int j,i;
   for(i = 0; i < height >> 1; i++){
     for(j = 0; j < width >> 1; j++){
-      register int index = i * 2 * width + j * 2;
+      int index = i * 2 * width + j * 2;
 
       Y.pixels[index].y = yccDSP.pixels[k].y1;
       Y.pixels[index+1].y = yccDSP.pixels[k].y2;
@@ -116,44 +116,32 @@ Image CSC_YCC_to_RGB(yccDSPImage yccDSP, int height, int width){
 
   for(i = 0; i< size; i+=4){
 
-    register int y1 = 74*(Y.pixels[i].y -16);
-    register int r1 = (y1 + 102*(Y.pixels[i].cr - 128)) >> 6;
-    register int g1 = ((y1 - 52*(Y.pixels[i].cr - 128) - 25*(Y.pixels[i].cb - 128))) >> 6;
-    register int b1 = (y1 + 129*(Y.pixels[i].cb - 128)) >> 6;
+    int y1 = 74*(Y.pixels[i].y -16);
+    int r1 = (y1 + 102*(Y.pixels[i].cr - 128)) >> 6;
+    int g1 = ((y1 - 52*(Y.pixels[i].cr - 128) - 25*(Y.pixels[i].cb - 128))) >> 6;
+    int b1 = (y1 + 129*(Y.pixels[i].cb - 128)) >> 6;
 
-    asm("USAT %0, #8, %1" : "=r" (r1) : "r" (r1));
-		asm("USAT %0, #8, %1" : "=r" (g1) : "r" (g1));
-		asm("USAT %0, #8, %1" : "=r" (b1) : "r" (b1));
-
-    yccRGB.pixels[i].r = r1;
-    yccRGB.pixels[i].g = g1;
-    yccRGB.pixels[i].b = b1;
+    yccRGB.pixels[i].r = saturation_int(r1);
+    yccRGB.pixels[i].g = saturation_int(g1);
+    yccRGB.pixels[i].b = saturation_int(b1);
 
     y1 = 74*(Y.pixels[i+1].y -16);
     r1 = (y1 + 102*(Y.pixels[i+1].cr - 128)) >> 6;
     g1 = ((y1 - 52*(Y.pixels[i+1].cr - 128) - 25*(Y.pixels[i+1].cb - 128))) >> 6;
     b1 = (y1 + 129*(Y.pixels[i+1].cb - 128)) >> 6;
-
-    asm("USAT %0, #8, %1" : "=r" (r1) : "r" (r1));
-		asm("USAT %0, #8, %1" : "=r" (g1) : "r" (g1));
-		asm("USAT %0, #8, %1" : "=r" (b1) : "r" (b1));
     
-    yccRGB.pixels[i+1].r = r1;
-    yccRGB.pixels[i+1].g = g1;
-    yccRGB.pixels[i+1].b = b1;
+    yccRGB.pixels[i+1].r = saturation_int(r1);
+    yccRGB.pixels[i+1].g = saturation_int(g1);
+    yccRGB.pixels[i+1].b = saturation_int(b1);
 
     y1 = 74*(Y.pixels[i+2].y -16);
     r1 = (y1 + 102*(Y.pixels[i+2].cr - 128)) >> 6;
     g1 = ((y1 - 52*(Y.pixels[i+2].cr - 128) - 25*(Y.pixels[i+2].cb - 128))) >> 6;
     b1 = (y1 + 129*(Y.pixels[i+2].cb - 128)) >> 6;
-
-    asm("USAT %0, #8, %1" : "=r" (r1) : "r" (r1));
-		asm("USAT %0, #8, %1" : "=r" (g1) : "r" (g1));
-		asm("USAT %0, #8, %1" : "=r" (b1) : "r" (b1));
     
-    yccRGB.pixels[i+2].r = r1;
-    yccRGB.pixels[i+2].g = g1;
-    yccRGB.pixels[i+2].b = b1;
+    yccRGB.pixels[i+2].r = saturation_int(r1);
+    yccRGB.pixels[i+2].g = saturation_int(g1);
+    yccRGB.pixels[i+2].b = saturation_int(b1);
 
 
     y1 = 74*(Y.pixels[i+3].y -16);
@@ -161,19 +149,14 @@ Image CSC_YCC_to_RGB(yccDSPImage yccDSP, int height, int width){
     g1 = ((y1 - 52*(Y.pixels[i+3].cr - 128) - 25*(Y.pixels[i+3].cb - 128))) >> 6;
     b1 = (y1 + 129*(Y.pixels[i+3].cb - 128)) >> 6;
 
-    asm("USAT %0, #8, %1" : "=r" (r1) : "r" (r1));
-		asm("USAT %0, #8, %1" : "=r" (g1) : "r" (g1));
-		asm("USAT %0, #8, %1" : "=r" (b1) : "r" (b1));
-    
-    yccRGB.pixels[i+3].r = r1;
-    yccRGB.pixels[i+3].g = g1;
-    yccRGB.pixels[i+3].b = b1;
+    yccRGB.pixels[i+3].r = saturation_int(r1);
+    yccRGB.pixels[i+3].g = saturation_int(g1);
+    yccRGB.pixels[i+3].b = saturation_int(b1);
 
   }
 
   free(Y.pixels);
   return yccRGB;
-
 
 }
 
@@ -182,7 +165,7 @@ yccDSPImage CSC_RGB_to_YCC(Image pic, int height, int width) {
   int size = width * height;
   Y.pixels = (yccPixel*) malloc (sizeof(yccPixel) * size);
 
-  register int i;
+  int i;
   //Can probably loop unroll up to 4 in parallel
   for(i = 0; i< size; i+=4){
     Y.pixels[i].y = 16 + ((25*pic.pixels[i].b
@@ -232,8 +215,8 @@ yccDSPImage CSC_RGB_to_YCC(Image pic, int height, int width) {
   // Perform Downsampling
   yccDSPImage yDSP;
   yDSP.pixels = (yccDSPPixel *)malloc(sizeof(yccDSPPixel) * size >> 2);
-  register int k=0;
-  register int j;
+  int k=0;
+  int j;
   for(i = 0; i < height >> 1; i++){
     for(j = 0; j < width >> 1; j++){
       int index = i * 2 * width + j * 2;
@@ -253,8 +236,9 @@ yccDSPImage CSC_RGB_to_YCC(Image pic, int height, int width) {
 
 
 int main( void) {
+
     // Open the BMP file for reading
-    FILE* file = fopen("../Images/RGB200.bmp", "rb");
+    FILE* file = fopen("../Images/RGB21.bmp", "rb");
     if (file == NULL) {
         printf("Error opening file.\n");
         return 1;
@@ -283,10 +267,9 @@ int main( void) {
     int size = height * width;
     pic.pixels = (Pixel*) malloc (sizeof(Pixel) * size);
 
-        // Get the data offset
+    // Get the data offset
     uint32_t dataOffset = file_header.offset;
 
-    printf("Data Offset: %u\n", dataOffset);
     // Move to the beginning of pixel data
     fseek(file, dataOffset, SEEK_SET);
     fread(pic.pixels, sizeof(Pixel), size, file);

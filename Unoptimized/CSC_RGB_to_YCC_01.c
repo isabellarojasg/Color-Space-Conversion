@@ -235,13 +235,8 @@ void CSC_RGB_to_YCC( void) {
         default:
           break;
       }
-//      printf( "Luma_00  = %02hhx\n", Y[row+0][col+0]);
-//      printf( "Luma_01  = %02hhx\n", Y[row+0][col+1]);
-//      printf( "Luma_10  = %02hhx\n", Y[row+1][col+0]);
-//      printf( "Luma_11  = %02hhx\n\n", Y[row+1][col+1]);
     }
   }
-
 
 } // END of CSC_RGB_to_YCC()
 
