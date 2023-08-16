@@ -4,7 +4,6 @@
 
 //#include <stdio.h>
 #include <stdint.h>
-#include <stdio.h>
 #include "CSC_global.h"
 
 // private data
@@ -16,7 +15,7 @@ static void CSC_YCC_to_RGB_brute_force_float( int row, int col);
 
 // =======
 static uint8_t saturation_int( int argument);
-static void CSC_YCC_to_RGB_brute_force_int( int row, int col, FILE *outputYCCtoRGBFile);
+static void CSC_YCC_to_RGB_brute_force_int( int row, int col);
 
 // =======
 static void chrominance_upsample(
@@ -117,7 +116,7 @@ static uint8_t saturation_int( int argument) {
 } // END of saturation_int()
 
 // =======
-static void CSC_YCC_to_RGB_brute_force_int( int row, int col, FILE *outputYCCtoRGBFile) {
+static void CSC_YCC_to_RGB_brute_force_int( int row, int col) {
 //
   int R_pixel_00, R_pixel_01, R_pixel_10, R_pixel_11;
   int G_pixel_00, G_pixel_01, G_pixel_10, G_pixel_11;
@@ -145,20 +144,6 @@ static void CSC_YCC_to_RGB_brute_force_int( int row, int col, FILE *outputYCCtoR
   Cr_pixel_10 = (int)Cr_temp[row+1][col+0];
   Cr_pixel_11 = (int)Cr_temp[row+1][col+1];
 
-    // fprintf(outputYCCtoRGBFile, "Y_pixel_00: %d\n", Y_pixel_00);
-    // fprintf(outputYCCtoRGBFile, "Y_pixel_01: %d\n", Y_pixel_01);
-    // fprintf(outputYCCtoRGBFile, "Y_pixel_10: %d\n", Y_pixel_10);
-    // fprintf(outputYCCtoRGBFile, "Y_pixel_11: %d\n", Y_pixel_11);
-
-    // fprintf(outputYCCtoRGBFile, "Cb_pixel_00: %d\n", Cb_pixel_00);
-    // fprintf(outputYCCtoRGBFile, "Cb_pixel_01: %d\n", Cb_pixel_01);
-    // fprintf(outputYCCtoRGBFile, "Cb_pixel_10: %d\n", Cb_pixel_10);
-    // fprintf(outputYCCtoRGBFile, "Cb_pixel_11: %d\n", Cb_pixel_11);
-
-    // fprintf(outputYCCtoRGBFile, "Cr_pixel_00: %d\n", Cr_pixel_00);
-    // fprintf(outputYCCtoRGBFile, "Cr_pixel_01: %d\n", Cr_pixel_01);
-    // fprintf(outputYCCtoRGBFile, "Cr_pixel_10: %d\n", Cr_pixel_10);
-    // fprintf(outputYCCtoRGBFile, "Cr_pixel_11: %d\n", Cr_pixel_11);
   Y_pixel_00 = Y_pixel_00 - 16;
   Y_pixel_01 = Y_pixel_01 - 16;
   Y_pixel_10 = Y_pixel_10 - 16;
@@ -240,22 +225,6 @@ static void CSC_YCC_to_RGB_brute_force_int( int row, int col, FILE *outputYCCtoR
   B[row+0][col+1] = (uint8_t)B_pixel_01;
   B[row+1][col+0] = (uint8_t)B_pixel_10;
   B[row+1][col+1] = (uint8_t)B_pixel_11;
-
-    fprintf(outputYCCtoRGBFile, "R[%d][%d] = %d\n", row+0, col+0, (uint8_t)R_pixel_00);
-    fprintf(outputYCCtoRGBFile, "R[%d][%d] = %d\n", row+0, col+1, (uint8_t)R_pixel_01);
-    fprintf(outputYCCtoRGBFile, "R[%d][%d] = %d\n", row+1, col+0, (uint8_t)R_pixel_10);
-    fprintf(outputYCCtoRGBFile, "R[%d][%d] = %d\n", row+1, col+1, (uint8_t)R_pixel_11);
-
-    fprintf(outputYCCtoRGBFile, "G[%d][%d] = %d\n", row+0, col+0, (uint8_t)G_pixel_00);
-    fprintf(outputYCCtoRGBFile, "G[%d][%d] = %d\n", row+0, col+1, (uint8_t)G_pixel_01);
-    fprintf(outputYCCtoRGBFile, "G[%d][%d] = %d\n", row+1, col+0, (uint8_t)G_pixel_10);
-    fprintf(outputYCCtoRGBFile, "G[%d][%d] = %d\n", row+1, col+1, (uint8_t)G_pixel_11);
-
-    fprintf(outputYCCtoRGBFile, "B[%d][%d] = %d\n", row+0, col+0, (uint8_t)B_pixel_00);
-    fprintf(outputYCCtoRGBFile, "B[%d][%d] = %d\n", row+0, col+1, (uint8_t)B_pixel_01);
-    fprintf(outputYCCtoRGBFile, "B[%d][%d] = %d\n", row+1, col+0, (uint8_t)B_pixel_10);
-    fprintf(outputYCCtoRGBFile, "B[%d][%d] = %d\n", row+1, col+1, (uint8_t)B_pixel_11);
-
 
 } // END of CSC_YCC_to_RGB_brute_force_int()
 
@@ -383,8 +352,6 @@ static void chrominance_array_upsample( void) {
 void CSC_YCC_to_RGB( void) {
   int row, col; // indices for row and column
 //
-  FILE* outputYCCtoRGBFile = fopen("outputYCCtoRGB.txt", "wb");
-
   for( row=0; row<IMAGE_ROW_SIZE; row+=2) {
     for( col=0; col<IMAGE_COL_SIZE; col+=2) { 
       //printf( "\n[row,col] = [%02i,%02i]\n\n", row, col);
@@ -395,7 +362,7 @@ void CSC_YCC_to_RGB( void) {
           CSC_YCC_to_RGB_brute_force_float( row, col);
           break;
         case 2:
-          CSC_YCC_to_RGB_brute_force_int( row, col, outputYCCtoRGBFile);
+          CSC_YCC_to_RGB_brute_force_int( row, col);
           break;
         default:
           break;
@@ -406,10 +373,6 @@ void CSC_YCC_to_RGB( void) {
 //      printf( "Luma_11  = %02hhx\n\n", Y[row+1][col+1]);
     }
   }
-
-  printf("closing");
-  fclose(outputYCCtoRGBFile);
-
 
 } // END of CSC_YCC_to_RGB()
 
